@@ -33,7 +33,9 @@
 ./api/modules.html
 ./examples.html
 ./examples/QartodTestExample_WaterLevel.html
+./examples/QartodTestExample_WaterLevel.ipynb
 ./examples/Qartod_Single_Test_Example.html
+./examples/Qartod_Single_Test_Example.ipynb
 ./genindex.html
 ./index.html
 ./installation.html
