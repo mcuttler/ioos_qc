@@ -248,6 +248,7 @@
 <span class="sd">        tspan: 2-tuple range.</span>
 <span class="sd">                If period is defined, then this is a numeric range.</span>
 <span class="sd">                If period is not defined, then its a date range.</span>
+<span class="sd">        fspan: (optional) 2-tuple range of valid values. This is passed in as the fail_span to the gross_range_test.</span>
 <span class="sd">        vspan: 2-tuple range of valid values. This is passed in as the suspect_span to the gross_range test.</span>
 <span class="sd">        zspan: (optional) Vertical (depth) range, in meters positive down</span>
 <span class="sd">        period: (optional) The unit the tspan argument is in. Defaults to datetime object</span>
@@ -261,6 +262,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mem</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">,</span> <span class="p">[</span>
         <span class="s1">&#39;tspan&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fspan&#39;</span><span class="p">,</span>
         <span class="s1">&#39;vspan&#39;</span><span class="p">,</span>
         <span class="s1">&#39;zspan&#39;</span><span class="p">,</span>
         <span class="s1">&#39;period&#39;</span>
@@ -305,6 +307,7 @@
 <div class="viewcode-block" id="ClimatologyConfig.add"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.qartod.ClimatologyConfig.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">tspan</span> <span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span>
             <span class="n">vspan</span> <span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span>
+            <span class="n">fspan</span> <span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">zspan</span> <span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">period</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -323,6 +326,10 @@
         <span class="k">assert</span> <span class="n">isfixedlength</span><span class="p">(</span><span class="n">vspan</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">vspan</span> <span class="o">=</span> <span class="n">span</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="n">vspan</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="n">fspan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">isfixedlength</span><span class="p">(</span><span class="n">fspan</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">fspan</span> <span class="o">=</span> <span class="n">span</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="n">fspan</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="n">zspan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">isfixedlength</span><span class="p">(</span><span class="n">zspan</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
             <span class="n">zspan</span> <span class="o">=</span> <span class="n">span</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="n">zspan</span><span class="p">))</span>
@@ -337,6 +344,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_members</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mem</span><span class="p">(</span>
                 <span class="n">tspan</span><span class="p">,</span>
+                <span class="n">fspan</span><span class="p">,</span>
                 <span class="n">vspan</span><span class="p">,</span>
                 <span class="n">zspan</span><span class="p">,</span>
                 <span class="n">period</span>
@@ -368,17 +376,17 @@
                 <span class="n">tinp_copy</span> <span class="o">=</span> <span class="n">tinp</span>
 
             <span class="c1"># If a zspan is defined but we don&#39;t have z input (zinp), skip this member</span>
-            <span class="c1"># Note: `zinp.any()` can return `np.ma.masked` so we also check using isnan</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">zinp</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">isnan</span><span class="p">(</span><span class="n">zinp</span><span class="o">.</span><span class="n">any</span><span class="p">())):</span>
+            <span class="c1"># Note: `zinp.count()` can return `np.ma.masked` so we also check using isnan</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">zinp</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="ow">or</span> <span class="n">isnan</span><span class="p">(</span><span class="n">zinp</span><span class="o">.</span><span class="n">any</span><span class="p">())):</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Indexes that align with the T</span>
-            <span class="n">t_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">tinp_copy</span> <span class="o">&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">tspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tinp_copy</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">tspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
+            <span class="n">t_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">tinp_copy</span> <span class="o">&gt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">tspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tinp_copy</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">tspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
 
             <span class="c1"># Indexes that align with the Z</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="p">):</span>
                 <span class="c1"># Only test non-masked values between the min and max</span>
-                <span class="n">z_idx</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">zinp</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">zinp</span> <span class="o">&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">zinp</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
+                <span class="n">z_idx</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">zinp</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">zinp</span> <span class="o">&gt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">zinp</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="o">.</span><span class="n">zspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Only test the values with masked Z, ie values with no Z</span>
                 <span class="n">z_idx</span> <span class="o">=</span> <span class="n">zinp</span><span class="o">.</span><span class="n">mask</span>
@@ -386,15 +394,20 @@
             <span class="c1"># Combine the T and Z indexes</span>
             <span class="n">values_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_idx</span> <span class="o">&amp;</span> <span class="n">z_idx</span><span class="p">)</span>
 
-            <span class="c1"># Suspect data for this value span. Combined with the values_idx it</span>
-            <span class="c1"># represents the subset ofdata that should be suspect for this member.</span>
-            <span class="c1"># We split it into two indexes so we can also set all values outside of the</span>
-            <span class="c1"># suspect range to GOOD by taking the inverse of the suspect_idx</span>
+            <span class="c1"># Failed and suspect data for this value span. Combining fail_idx or </span>
+            <span class="c1"># suspect_idx with values_idx represents the subsets of data that should be</span>
+            <span class="c1"># fail and suspect respectively.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">fspan</span><span class="p">):</span>
+                <span class="n">fail_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">inp</span> <span class="o">&lt;</span> <span class="n">m</span><span class="o">.</span><span class="n">fspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">inp</span> <span class="o">&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">fspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fail_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
             <span class="n">suspect_idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">inp</span> <span class="o">&lt;</span> <span class="n">m</span><span class="o">.</span><span class="n">vspan</span><span class="o">.</span><span class="n">minv</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">inp</span> <span class="o">&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">vspan</span><span class="o">.</span><span class="n">maxv</span><span class="p">)</span>
             
             <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
-                <span class="n">flag_arr</span><span class="p">[(</span><span class="n">values_idx</span> <span class="o">&amp;</span> <span class="n">suspect_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">SUSPECT</span>
-                <span class="n">flag_arr</span><span class="p">[(</span><span class="n">values_idx</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">suspect_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">GOOD</span>
+                <span class="n">flag_arr</span><span class="p">[(</span><span class="n">values_idx</span> <span class="o">&amp;</span> <span class="n">fail_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">FAIL</span>
+                <span class="n">flag_arr</span><span class="p">[(</span><span class="n">values_idx</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fail_idx</span> <span class="o">&amp;</span> <span class="n">suspect_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">SUSPECT</span>
+                <span class="n">flag_arr</span><span class="p">[(</span><span class="n">values_idx</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fail_idx</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">suspect_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">GOOD</span>
 
         <span class="k">return</span> <span class="n">flag_arr</span></div>
 

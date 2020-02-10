@@ -111,6 +111,7 @@ it does not monotonically increase</p>
 <li><p><strong>tspan</strong> – 2-tuple range.
 If period is defined, then this is a numeric range.
 If period is not defined, then its a date range.</p></li>
+<li><p><strong>fspan</strong> – (optional) 2-tuple range of valid values. This is passed in as the fail_span to the gross_range_test.</p></li>
 <li><p><strong>vspan</strong> – 2-tuple range of valid values. This is passed in as the suspect_span to the gross_range test.</p></li>
 <li><p><strong>zspan</strong> – (optional) Vertical (depth) range, in meters positive down</p></li>
 <li><p><strong>period</strong> – <p>(optional) The unit the tspan argument is in. Defaults to datetime object
@@ -131,7 +132,7 @@ See: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/s
 </dl>
 <dl class="method">
 <dt id="ioos_qc.qartod.ClimatologyConfig.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">tspan</em>, <em class="sig-param">vspan</em>, <em class="sig-param">zspan=None</em>, <em class="sig-param">period=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#ClimatologyConfig.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.ClimatologyConfig.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param">tspan</em>, <em class="sig-param">vspan</em>, <em class="sig-param">fspan=None</em>, <em class="sig-param">zspan=None</em>, <em class="sig-param">period=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#ClimatologyConfig.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.ClimatologyConfig.add" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
