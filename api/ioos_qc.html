@@ -234,16 +234,22 @@ See: <a class="reference external" href="https://pandas.pydata.org/pandas-docs/s
 
 <dl class="function">
 <dt id="ioos_qc.qartod.attenuated_signal_test">
-<code class="sig-prename descclassname">ioos_qc.qartod.</code><code class="sig-name descname">attenuated_signal_test</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">threshold</em>, <em class="sig-param">check_type='std'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#attenuated_signal_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.attenuated_signal_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ioos_qc.qartod.</code><code class="sig-name descname">attenuated_signal_test</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">tinp</em>, <em class="sig-param">suspect_threshold</em>, <em class="sig-param">fail_threshold</em>, <em class="sig-param">test_period=None</em>, <em class="sig-param">min_obs=None</em>, <em class="sig-param">check_type='std'</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#attenuated_signal_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.attenuated_signal_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for near-flat-line conditions using a range or standard deviation.</p>
 <p>Missing and masked data is flagged as UNKNOWN.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Input data as a numeric numpy array or a list of numbers.</p></li>
-<li><p><strong>threshold</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – 2-tuple representing the minimum thresholds to use for SUSPECT
-and FAIL checks. The smaller of the two values is used in the SUSPECT
-tests and the greater of the two values is used in the FAIL tests.</p></li>
+<li><p><strong>tinp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Time input data as a numpy array of dtype <cite>datetime64</cite>.</p></li>
+<li><p><strong>suspect_threshold</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Any calculated value below this amount will be flagged as SUSPECT.
+In observations units.</p></li>
+<li><p><strong>fail_threshold</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Any calculated values below this amount will be flagged as FAIL.
+In observations units.</p></li>
+<li><p><strong>test_period</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Length of time to test over in seconds [optional].
+Otherwise, will test against entire <cite>inp</cite>.</p></li>
+<li><p><strong>min_obs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Minimum number of observations in window required to calculate a result [optional].
+Otherwise, test will start at beginning of time series.</p></li>
 <li><p><strong>check_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Either ‘std’ (default) or ‘range’, depending on the type of check
 you wish to perform.</p></li>
 </ul>

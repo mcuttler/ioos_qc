@@ -683,8 +683,14 @@
 
 <div class="viewcode-block" id="attenuated_signal_test"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.qartod.attenuated_signal_test">[docs]</a><span class="nd">@add_flag_metadata</span><span class="p">(</span><span class="s1">&#39;attenuated_signal_test_quality_flag&#39;</span><span class="p">,</span> <span class="s1">&#39;Attenuated Signal Test Quality Flag&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">attenuated_signal_test</span><span class="p">(</span><span class="n">inp</span> <span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">N</span><span class="p">],</span>
-                           <span class="n">threshold</span> <span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span>
-                           <span class="n">check_type</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;std&#39;</span>
+                           <span class="n">tinp</span> <span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">N</span><span class="p">],</span>
+                           <span class="n">suspect_threshold</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span>
+                           <span class="n">fail_threshold</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span>
+                           <span class="n">test_period</span><span class="p">:</span> <span class="n">N</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">min_obs</span><span class="p">:</span> <span class="n">N</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">check_type</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;std&#39;</span><span class="p">,</span>
+                           <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
                            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Check for near-flat-line conditions using a range or standard deviation.</span>
 
@@ -692,9 +698,15 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        inp: Input data as a numeric numpy array or a list of numbers.</span>
-<span class="sd">        threshold: 2-tuple representing the minimum thresholds to use for SUSPECT</span>
-<span class="sd">            and FAIL checks. The smaller of the two values is used in the SUSPECT</span>
-<span class="sd">            tests and the greater of the two values is used in the FAIL tests.</span>
+<span class="sd">        tinp: Time input data as a numpy array of dtype `datetime64`.</span>
+<span class="sd">        suspect_threshold: Any calculated value below this amount will be flagged as SUSPECT.</span>
+<span class="sd">            In observations units.</span>
+<span class="sd">        fail_threshold: Any calculated values below this amount will be flagged as FAIL.</span>
+<span class="sd">            In observations units.</span>
+<span class="sd">        test_period: Length of time to test over in seconds [optional].</span>
+<span class="sd">            Otherwise, will test against entire `inp`.</span>
+<span class="sd">        min_obs: Minimum number of observations in window required to calculate a result [optional].</span>
+<span class="sd">            Otherwise, test will start at beginning of time series.</span>
 <span class="sd">        check_type: Either &#39;std&#39; (default) or &#39;range&#39;, depending on the type of check</span>
 <span class="sd">            you wish to perform.</span>
 
@@ -704,33 +716,43 @@
 <span class="sd">        input data is flagged together.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">assert</span> <span class="n">isfixedlength</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">threshold</span> <span class="o">=</span> <span class="n">span</span><span class="p">(</span><span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">threshold</span><span class="p">)))</span>
+    <span class="c1"># window_func: Applied to each window when `time_period` is supplied</span>
+    <span class="c1"># check_func: Applied to a flattened numpy array when no `time_period` is supplied</span>
+    <span class="c1"># These are split for performance reasons</span>
+    <span class="k">if</span> <span class="n">check_type</span> <span class="o">==</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span>
+        <span class="n">window_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>  <span class="c1"># noqa</span>
+        <span class="n">check_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span>
+    <span class="k">elif</span> <span class="n">check_type</span> <span class="o">==</span> <span class="s1">&#39;range&#39;</span><span class="p">:</span>
+        <span class="c1"># When requiring pandas&gt;=1.0, try the `engine=&#39;numba&#39;` argument to apply</span>
+        <span class="n">window_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># noqa</span>
+        <span class="n">check_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Check type &quot;</span><span class="si">{}</span><span class="s1">&quot; is not one of [&quot;std&quot;, &quot;range&quot;]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">check_type</span><span class="p">))</span>
 
+    <span class="n">tinp</span> <span class="o">=</span> <span class="n">mapdates</span><span class="p">(</span><span class="n">tinp</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">))</span>
 
     <span class="c1"># Save original shape</span>
     <span class="n">original_shape</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">inp</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">check_type</span> <span class="o">==</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span>
-        <span class="n">check_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">check_type</span> <span class="o">==</span> <span class="s1">&#39;range&#39;</span><span class="p">:</span>
-        <span class="n">check_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+    <span class="c1"># Start with everything as not tested (0)</span>
+    <span class="n">flag_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">inp</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">test_period</span><span class="p">:</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">tinp</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{test_period}</span><span class="s1">s&#39;</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="n">min_obs</span><span class="p">)</span>
+        <span class="n">check_val</span> <span class="o">=</span> <span class="n">window_func</span><span class="p">(</span><span class="n">windows</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Check type &quot;</span><span class="si">{}</span><span class="s1">&quot; is not defined&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">check_type</span><span class="p">))</span>
+        <span class="c1"># applying np.ptp to Series causes warnings, this is a workaround</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">check_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">flag_arr</span><span class="p">)</span> <span class="o">*</span> <span class="n">check_func</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
 
-    <span class="c1"># Start with everything as passing (1)</span>
-    <span class="n">flag_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">check_val</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="o">.</span><span class="n">maxv</span><span class="p">:</span>
-        <span class="n">flag_arr</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">QartodFlags</span><span class="o">.</span><span class="n">FAIL</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">check_val</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="o">.</span><span class="n">minv</span><span class="p">:</span>
-        <span class="n">flag_arr</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">QartodFlags</span><span class="o">.</span><span class="n">SUSPECT</span><span class="p">)</span>
-
-    <span class="c1"># If the value is masked set the flag to MISSING</span>
+    <span class="n">flag_arr</span><span class="p">[</span><span class="n">check_val</span> <span class="o">&gt;=</span> <span class="n">suspect_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">GOOD</span>
+    <span class="n">flag_arr</span><span class="p">[</span><span class="n">check_val</span> <span class="o">&lt;</span> <span class="n">suspect_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">SUSPECT</span>
+    <span class="n">flag_arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">check_val</span><span class="p">)]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">UNKNOWN</span>
+    <span class="n">flag_arr</span><span class="p">[</span><span class="n">check_val</span> <span class="o">&lt;</span> <span class="n">fail_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">FAIL</span>
     <span class="n">flag_arr</span><span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">MISSING</span>
 
     <span class="k">return</span> <span class="n">flag_arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span></div>
