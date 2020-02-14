@@ -7,12 +7,12 @@
     <title>ioos_qc.config &#8212; ioos_qc 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -56,6 +56,14 @@
 <div class="viewcode-block" id="QcConfig"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.QcConfig">[docs]</a><span class="k">class</span> <span class="nc">QcConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this object to define test configuration one time,</span>
+<span class="sd">        and then run checks against multiple streams of input data.</span>
+
+<span class="sd">        :param path_or_dict: test configuration, one of the following formats:</span>
+<span class="sd">            python dict or OrderedDict</span>
+<span class="sd">            JSON/YAML filepath (str or Path object)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">path_or_dict</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -71,15 +79,15 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">y</span>
 
-<div class="viewcode-block" id="QcConfig.run"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.QcConfig.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gen_agg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">passedkwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="QcConfig.run"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.QcConfig.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">passedkwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Runs the tests that are defined in the config object.</span>
 
-<span class="sd">            Args:</span>
-<span class="sd">                gen_agg: Whether or not to call `qartod_compare` and generate the aggregate/rollup flag.</span>
-<span class="sd">                    If given, will store the aggregate flag in the results as `results[&#39;qartod&#39;][&#39;aggregate_flag&#39;]`</span>
+<span class="sd">            Your input arguments should include whatever is necessary for the tests you want to run.</span>
+<span class="sd">            For example: inp, tinp, lat, lon, etc.</span>
 
 <span class="sd">            Returns:</span>
-<span class="sd">                A dictionary of the results as defined by the config</span>
+<span class="sd">                A dictionary of results that has the same structure as the config object.</span>
+<span class="sd">                The leaves (test parameters) are replaced by the results of each test.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">modu</span><span class="p">,</span> <span class="n">tests</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -94,6 +102,8 @@
                     <span class="n">L</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No test named &quot;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&quot; was found, skipping&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modu</span><span class="p">,</span> <span class="n">testname</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="n">kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">L</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Test &quot;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&quot; had no config, skipping&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modu</span><span class="p">,</span> <span class="n">testname</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">modu</span> <span class="o">==</span> <span class="s1">&#39;qartod&#39;</span> <span class="ow">and</span> <span class="n">testname</span> <span class="o">==</span> <span class="s1">&#39;aggregate&#39;</span><span class="p">:</span>
+                    <span class="n">L</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skip aggregate (will run after all other tests)&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Get our own copy of the kwargs object so we can change it</span>
                     <span class="n">testkwargs</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">passedkwargs</span><span class="p">)</span>
@@ -108,16 +118,10 @@
                     <span class="n">testkwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">testkwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">valid_keywords</span> <span class="p">}</span>
                     <span class="n">results</span><span class="p">[</span><span class="n">modu</span><span class="p">][</span><span class="n">testname</span><span class="p">]</span> <span class="o">=</span> <span class="n">runfunc</span><span class="p">(</span><span class="o">**</span><span class="n">testkwargs</span><span class="p">)</span>  <span class="c1"># noqa</span>
 
-            <span class="n">QcConfig</span><span class="o">.</span><span class="n">generate_aggregate_flag</span><span class="p">(</span><span class="n">gen_agg</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modu</span> <span class="o">==</span> <span class="s1">&#39;qartod&#39;</span> <span class="ow">and</span> <span class="s1">&#39;aggregate&#39;</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">qartod</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">results</span></div>
-
-<div class="viewcode-block" id="QcConfig.generate_aggregate_flag"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.QcConfig.generate_aggregate_flag">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">generate_aggregate_flag</span><span class="p">(</span><span class="n">gen_agg</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">gen_agg</span> <span class="ow">and</span> <span class="s1">&#39;qartod&#39;</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-            <span class="n">all_tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;qartod&#39;</span><span class="p">][</span><span class="n">test_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;qartod&#39;</span><span class="p">])]</span>
-            <span class="n">results</span><span class="p">[</span><span class="s1">&#39;qartod&#39;</span><span class="p">][</span><span class="s1">&#39;aggregate_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qartod</span><span class="o">.</span><span class="n">qartod_compare</span><span class="p">(</span><span class="n">all_tests</span><span class="p">)</span></div>
-
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; A human friendly representation of the tests that this QcConfig object defines. &quot;&quot;&quot;</span>
@@ -350,7 +354,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -367,7 +371,7 @@
       &copy;2017, IOOS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
