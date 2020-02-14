@@ -80,14 +80,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">y</span>
 
 <div class="viewcode-block" id="QcConfig.run"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.QcConfig.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">passedkwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Runs the tests that are defined in the config object.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the tests that are defined in the config object.</span>
 
-<span class="sd">            Your input arguments should include whatever is necessary for the tests you want to run.</span>
-<span class="sd">            For example: inp, tinp, lat, lon, etc.</span>
+<span class="sd">        Your input arguments should include whatever is necessary for the tests you want to run.</span>
+<span class="sd">        For example: inp, tinp, lat, lon, etc.</span>
 
-<span class="sd">            Returns:</span>
-<span class="sd">                A dictionary of results that has the same structure as the config object.</span>
-<span class="sd">                The leaves (test parameters) are replaced by the results of each test.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary of results that has the same structure as the config object.</span>
+<span class="sd">            The leaves (test parameters) are replaced by the results of each test.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">modu</span><span class="p">,</span> <span class="n">tests</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -130,29 +131,62 @@
 
 <div class="viewcode-block" id="NcQcConfig"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.NcQcConfig">[docs]</a><span class="k">class</span> <span class="nc">NcQcConfig</span><span class="p">(</span><span class="n">QcConfig</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_ncd_or_dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_dict</span><span class="p">,</span> <span class="n">tinp</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">zinp</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">lon</span><span class="o">=</span><span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="s1">&#39;latitude&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this object to define test configuration one time,</span>
+<span class="sd">        and then run checks against multiple streams of input data.</span>
+
+<span class="sd">        For example, if you have a netcdf with variables time, depth, and air_temp:</span>
+
+<span class="sd">        config = {</span>
+<span class="sd">                    &#39;air_temp&#39;: {</span>
+<span class="sd">                        &#39;qartod&#39;: {</span>
+<span class="sd">                            &#39;gross_range_test&#39;: {</span>
+<span class="sd">                                &#39;suspect_span&#39;: [1, 11],</span>
+<span class="sd">                                &#39;fail_span&#39;: [0, 12],</span>
+<span class="sd">                            }</span>
+<span class="sd">                        }</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+<span class="sd">        c = NcQcConfig(config, tinp=&#39;time&#39;, zinp=&#39;depth&#39;)</span>
+
+<span class="sd">        :param path_or_dict: Test configuration, in one of the following formats:</span>
+<span class="sd">                python dict or OrderedDict</span>
+<span class="sd">                JSON/YAML filepath (str or Path object)</span>
+<span class="sd">                netCDF4 filepath (str or Path object)</span>
+<span class="sd">            Configurations should be keyed by target variable name.</span>
+<span class="sd">        :param tinp: name of time variable</span>
+<span class="sd">        :param zinp: name of depth variable</span>
+<span class="sd">        :param lon: name of longitude variable</span>
+<span class="sd">        :param lat: name of latitude variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tinp</span> <span class="o">=</span> <span class="n">tinp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zinp</span> <span class="o">=</span> <span class="n">zinp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span>
 
         <span class="n">load_as_dataset</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">path_or_ncd_or_dict</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">path_or_dict</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">y</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
                 <span class="n">load_as_dataset</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">path_or_ncd_or_dict</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">path_or_dict</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">y</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
                 <span class="n">load_as_dataset</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">load_as_dataset</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">path_or_ncd_or_dict</span><span class="p">,</span> <span class="n">decode_cf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">path_or_dict</span><span class="p">,</span> <span class="n">decode_cf</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
                 <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">filter_by_attrs</span><span class="p">(</span>
                     <span class="n">ioos_qc_module</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">ioos_qc_test</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
@@ -160,6 +194,8 @@
                     <span class="n">ioos_qc_target</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">dv</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">dv</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+                        <span class="k">continue</span>
                     <span class="n">vobj</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">dv</span><span class="p">]</span>
 
                     <span class="c1"># Because a data variables can have more than one check</span>
@@ -179,8 +215,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">y</span>
 
 <div class="viewcode-block" id="NcQcConfig.run"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.NcQcConfig.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_ncd</span><span class="p">,</span> <span class="o">**</span><span class="n">passedkwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Runs the tests that are defined in the config object.</span>
-<span class="sd">            Returns a dictionary of the results as defined by the config</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the tests that are defined in the config object.</span>
+<span class="sd">        Returns a dictionary of the results as defined by the config</span>
+
+<span class="sd">        :param path_or_ncd: data to run tests against</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
@@ -193,6 +232,14 @@
                     <span class="k">continue</span>
 
                 <span class="n">varkwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;inp&#39;</span><span class="p">:</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">vname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="p">}</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tinp</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+                    <span class="n">varkwargs</span><span class="p">[</span><span class="s1">&#39;tinp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tinp</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zinp</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+                    <span class="n">varkwargs</span><span class="p">[</span><span class="s1">&#39;zinp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">zinp</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lon</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+                    <span class="n">varkwargs</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lon</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+                    <span class="n">varkwargs</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="k">if</span> <span class="n">vname</span> <span class="ow">in</span> <span class="n">passedkwargs</span><span class="p">:</span>
                     <span class="n">varkwargs</span> <span class="o">=</span> <span class="n">dict_update</span><span class="p">(</span><span class="n">varkwargs</span><span class="p">,</span> <span class="n">passedkwargs</span><span class="p">[</span><span class="n">vname</span><span class="p">])</span>
 
@@ -200,6 +247,14 @@
         <span class="k">return</span> <span class="n">results</span></div>
 
 <div class="viewcode-block" id="NcQcConfig.save_to_netcdf"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.config.NcQcConfig.save_to_netcdf">[docs]</a>    <span class="k">def</span> <span class="nf">save_to_netcdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_or_ncd</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the given netcdf with test configuration and results.</span>
+<span class="sd">        If there is already a variable for a given test, it will update that variable with the latest results.</span>
+<span class="sd">        Otherwise, it will create a new variable.</span>
+
+<span class="sd">        :param path_or_ncd: path or netcdf4 Dataset in which to store results</span>
+<span class="sd">        :param results: output of run()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ncd</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">should_close</span> <span class="o">=</span> <span class="kc">True</span>
@@ -274,7 +329,18 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">v</span> <span class="o">=</span> <span class="n">ncd</span><span class="p">[</span><span class="n">qcvarname</span><span class="p">]</span>
 
-                        <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;standard_name&#39;</span><span class="p">,</span> <span class="s1">&#39;status_flag&#39;</span><span class="p">)</span>
+                        <span class="c1"># determine standard name (https://github.com/cf-convention/cf-conventions/issues/216)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">testfn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">testpackage</span><span class="p">,</span> <span class="n">testname</span><span class="p">)</span>
+                            <span class="n">standard_name</span> <span class="o">=</span> <span class="n">testfn</span><span class="o">.</span><span class="n">standard_name</span>
+                            <span class="n">long_name</span> <span class="o">=</span> <span class="n">testfn</span><span class="o">.</span><span class="n">long_name</span>
+                        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                            <span class="n">standard_name</span> <span class="o">=</span> <span class="s1">&#39;quality_flag&#39;</span>
+                            <span class="n">long_name</span> <span class="o">=</span> <span class="s1">&#39;Quality Flag&#39;</span>
+
+                        <span class="c1"># write test to netcdf</span>
+                        <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;standard_name&#39;</span><span class="p">,</span> <span class="n">standard_name</span><span class="p">)</span>
+                        <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;long_name&#39;</span><span class="p">,</span> <span class="n">long_name</span><span class="p">)</span>
                         <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;flag_values&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">byte</span><span class="p">(</span><span class="n">varflagvalues</span><span class="p">))</span>
                         <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;flag_meanings&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">varflagnames</span><span class="p">))</span>
                         <span class="n">v</span><span class="o">.</span><span class="n">setncattr</span><span class="p">(</span><span class="s1">&#39;valid_min&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">byte</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">varflagvalues</span><span class="p">)))</span>

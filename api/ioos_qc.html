@@ -41,19 +41,35 @@
 <span id="ioos-qc-config-module"></span><h2>ioos_qc.config module<a class="headerlink" href="#module-ioos_qc.config" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ioos_qc.config.NcQcConfig">
-<em class="property">class </em><code class="sig-prename descclassname">ioos_qc.config.</code><code class="sig-name descname">NcQcConfig</code><span class="sig-paren">(</span><em class="sig-param">path_or_ncd_or_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/config.html#NcQcConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.config.NcQcConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ioos_qc.config.</code><code class="sig-name descname">NcQcConfig</code><span class="sig-paren">(</span><em class="sig-param">path_or_dict</em>, <em class="sig-param">tinp='time'</em>, <em class="sig-param">zinp='z'</em>, <em class="sig-param">lon='longitude'</em>, <em class="sig-param">lat='latitude'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/config.html#NcQcConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.config.NcQcConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ioos_qc.config.QcConfig" title="ioos_qc.config.QcConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ioos_qc.config.QcConfig</span></code></a></p>
 <dl class="method">
 <dt id="ioos_qc.config.NcQcConfig.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">path_or_ncd</em>, <em class="sig-param">**passedkwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/config.html#NcQcConfig.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.config.NcQcConfig.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the tests that are defined in the config object.
 Returns a dictionary of the results as defined by the config</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_or_ncd</strong> – data to run tests against</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="ioos_qc.config.NcQcConfig.save_to_netcdf">
 <code class="sig-name descname">save_to_netcdf</code><span class="sig-paren">(</span><em class="sig-param">path_or_ncd</em>, <em class="sig-param">results</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/config.html#NcQcConfig.save_to_netcdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.config.NcQcConfig.save_to_netcdf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Updates the given netcdf with test configuration and results.
+If there is already a variable for a given test, it will update that variable with the latest results.
+Otherwise, it will create a new variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_or_ncd</strong> – path or netcdf4 Dataset in which to store results</p></li>
+<li><p><strong>results</strong> – output of run()</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -459,6 +475,11 @@ Missing and masked data is flagged as UNKNOWN.</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="function">
+<dt id="ioos_qc.utils.add_flag_metadata">
+<code class="sig-prename descclassname">ioos_qc.utils.</code><code class="sig-name descname">add_flag_metadata</code><span class="sig-paren">(</span><em class="sig-param">standard_name</em>, <em class="sig-param">long_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/utils.html#add_flag_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.utils.add_flag_metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="ioos_qc.utils.cf_safe_name">

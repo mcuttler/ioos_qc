@@ -46,6 +46,14 @@
 <span class="n">L</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># noqa</span>
 
 
+<div class="viewcode-block" id="add_flag_metadata"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.utils.add_flag_metadata">[docs]</a><span class="k">def</span> <span class="nf">add_flag_metadata</span><span class="p">(</span><span class="n">standard_name</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">dec</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="n">fn</span><span class="o">.</span><span class="n">standard_name</span> <span class="o">=</span> <span class="n">standard_name</span>
+        <span class="n">fn</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">long_name</span>
+        <span class="k">return</span> <span class="n">fn</span>
+    <span class="k">return</span> <span class="n">dec</span></div>
+
+
 <div class="viewcode-block" id="isfixedlength"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.utils.isfixedlength">[docs]</a><span class="k">def</span> <span class="nf">isfixedlength</span><span class="p">(</span><span class="n">lst</span> <span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">],</span>
                   <span class="n">length</span> <span class="p">:</span> <span class="nb">int</span>
                   <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
