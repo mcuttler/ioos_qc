@@ -257,22 +257,26 @@
 
 
 <div class="viewcode-block" id="ClimatologyConfig"><a class="viewcode-back" href="../../api/ioos_qc.html#ioos_qc.qartod.ClimatologyConfig">[docs]</a><span class="k">class</span> <span class="nc">ClimatologyConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Objects to hold the config for a Climatology test</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        tspan: 2-tuple range.</span>
-<span class="sd">                If period is defined, then this is a numeric range.</span>
-<span class="sd">                If period is not defined, then its a date range.</span>
+<span class="sd">               If period is defined, then this is a numeric range.</span>
+<span class="sd">               If period is not defined, then its a date range.</span>
 <span class="sd">        fspan: (optional) 2-tuple range of valid values. This is passed in as the fail_span to the gross_range_test.</span>
 <span class="sd">        vspan: 2-tuple range of valid values. This is passed in as the suspect_span to the gross_range test.</span>
 <span class="sd">        zspan: (optional) Vertical (depth) range, in meters positive down</span>
 <span class="sd">        period: (optional) The unit the tspan argument is in. Defaults to datetime object</span>
 <span class="sd">                but can also be any attribute supported by a pandas Timestamp object.</span>
+
 <span class="sd">                See: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timestamp.html</span>
-<span class="sd">                    * year</span>
-<span class="sd">                    * week / weekofyear</span>
-<span class="sd">                    * dayofyear</span>
-<span class="sd">                    * dayofweek</span>
-<span class="sd">                    * quarter</span>
+
+<span class="sd">                Options:</span>
+<span class="sd">                * year</span>
+<span class="sd">                * week / weekofyear</span>
+<span class="sd">                * dayofyear</span>
+<span class="sd">                * dayofweek</span>
+<span class="sd">                * quarter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mem</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">,</span> <span class="p">[</span>
         <span class="s1">&#39;tspan&#39;</span><span class="p">,</span>
@@ -604,6 +608,7 @@
     <span class="sd">&quot;&quot;&quot;Check for consecutively repeated values within a tolerance.</span>
 <span class="sd">    Missing and masked data is flagged as UNKNOWN.</span>
 <span class="sd">    More information: https://github.com/ioos/ioos_qc/pull/11</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        inp: Input data as a numeric numpy array or a list of numbers.</span>
 <span class="sd">        tinp: Time data as a sequence of datetime objects compatible with pandas DatetimeIndex.</span>
@@ -618,6 +623,7 @@
 <span class="sd">            To determine if the current point `n` should be flagged, we use a rolling window, with endpoint at</span>
 <span class="sd">            point `n`, and calculate the range of values in the window. If that range is less than `tolerance`,</span>
 <span class="sd">            then the point is flagged.</span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        A masked array of flag values equal in size to that of the input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -834,7 +840,7 @@
       &copy;2017, IOOS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
