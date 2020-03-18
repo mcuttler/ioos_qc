@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # coding=utf-8
-import geojson
 import logging
-from datetime import datetime, date
 from typing import Union
 from numbers import Real
+from datetime import date, datetime
 
 import numpy as np
+import geojson
 
 N = Real
 L = logging.getLogger(__name__)  # noqa

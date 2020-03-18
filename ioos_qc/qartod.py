@@ -2,19 +2,15 @@
 # coding=utf-8
 import logging
 import warnings
-from collections import namedtuple
+from typing import Dict, Tuple, Union, Sequence
 from numbers import Real as N
-from typing import Sequence, Tuple, Union, Dict
+from collections import namedtuple
 
 import numpy as np
 import pandas as pd
 from pygc import great_distance
 
-from ioos_qc.utils import (
-    isnan,
-    isfixedlength,
-    add_flag_metadata
-)
+from ioos_qc.utils import isnan, isfixedlength, add_flag_metadata
 
 L = logging.getLogger(__name__)  # noqa
 
