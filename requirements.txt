@@ -3,5 +3,6 @@ netCDF4
 numpy>=1.14
 pygc
 ruamel.yaml
+shapely
 simplejson
 xarray
