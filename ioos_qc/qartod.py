@@ -2,7 +2,7 @@
 # coding=utf-8
 import logging
 import warnings
-from typing import Dict, Tuple, Union, Sequence
+from typing import Dict, List, Tuple, Union, Sequence
 from numbers import Real as N
 from collections import namedtuple
 
@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from pygc import great_distance
 
-from ioos_qc.utils import isnan, isfixedlength, add_flag_metadata
+from ioos_qc.utils import isnan, mapdates, isfixedlength, add_flag_metadata
 
 L = logging.getLogger(__name__)  # noqa
 
@@ -31,29 +31,23 @@ NOTEVAL_VALUE = QartodFlags.UNKNOWN
 span = namedtuple('Span', 'minv maxv')
 
 
-def mapdates(dates):
-    if hasattr(dates, 'dtype') and np.issubdtype(dates.dtype, np.datetime64):
-        # numpy datetime objects
-        return dates.astype('datetime64[ns]')
-    else:
-        try:
-            # Finally try unix epoch seconds
-            return pd.to_datetime(dates, unit='s').values.astype('datetime64[ns]')
-        except Exception:
-            # strings work here but we don't advertise that
-            return np.array(dates, dtype='datetime64[ns]')
-
-
 @add_flag_metadata(standard_name='aggregate_quality_flag',
                    long_name='Aggregate Quality Flag',
                    aggregate=True)
-def aggregate(results: dict) -> np.ma.MaskedArray:
+def aggregate(results: dict, functions: List = None) -> np.ma.MaskedArray:
     """
     Runs qartod_compare against all other qartod tests in results.
     """
-    all_tests = [results['qartod'][test_name] for test_name in list(results['qartod'])]
-    results['qartod']['aggregate'] = qartod_compare(all_tests)
-    return results
+    if functions is None:
+        all_tests = [results['qartod'][test_name] for test_name in list(results['qartod'])]
+    else:
+        all_tests = []
+        for m in functions:
+            package = m[0]
+            testname = m[1]
+            if package in results and testname in results[package]:
+                all_tests.append(results[package][testname])
+    return qartod_compare(all_tests)
 
 
 def qartod_compare(vectors : Sequence[Sequence[N]]
@@ -87,7 +81,7 @@ def qartod_compare(vectors : Sequence[Sequence[N]]
         for v in vectors:
             idx = np.where(v == p)[0]
             result[idx] = p
-    return result
+    return result.astype(int)
 
 
 @add_flag_metadata(standard_name='location_test_quality_flag',
@@ -337,7 +331,7 @@ class ClimatologyConfig(object):
 
     def check(self, tinp, inp, zinp):
 
-        # Start with everything as UNKNOWN (1)
+        # Start with everything as UNKNOWN (2)
         flag_arr = np.ma.empty(inp.size, dtype='uint8')
         flag_arr.fill(QartodFlags.UNKNOWN)
 

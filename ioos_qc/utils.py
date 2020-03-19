@@ -7,10 +7,11 @@ from typing import Any, Union
 from numbers import Real
 from pathlib import Path
 from datetime import date, datetime
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 from collections.abc import Mapping
 
 import numpy as np
+import pandas as pd
 import geojson
 from ruamel.yaml import YAML
 
@@ -87,6 +88,19 @@ def isnan(v : Any) -> bool:
     )
 
 
+def mapdates(dates):
+    if hasattr(dates, 'dtype') and np.issubdtype(dates.dtype, np.datetime64):
+        # numpy datetime objects
+        return dates.astype('datetime64[ns]')
+    else:
+        try:
+            # Finally try unix epoch seconds
+            return pd.to_datetime(dates, unit='s').values.astype('datetime64[ns]')
+        except Exception:
+            # strings work here but we don't advertise that
+            return np.array(dates, dtype='datetime64[ns]')
+
+
 def check_timestamps(times : np.ndarray,
                      max_time_interval : N = None
                      ) -> bool:
@@ -130,7 +144,7 @@ def dict_update(d : Mapping, u : Mapping) -> Mapping:
             else:
                 d[k] = u[k]
         else:
-            d = {k: u[k] }
+            d = { k: u[k] }
     return d
 
 
