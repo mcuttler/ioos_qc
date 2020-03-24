@@ -35,13 +35,100 @@
             
   <div class="section" id="ioos-qc-releases-and-migration-guide">
 <h1>IOOS QC Releases and Migration Guide<a class="headerlink" href="#ioos-qc-releases-and-migration-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="oct-9-2019">
-<h2>1.0.0 (Oct 9, 2019)<a class="headerlink" href="#oct-9-2019" title="Permalink to this headline">¶</a></h2>
-<p>First release of consolidated library. No changes from <strong>0.2.1</strong>.</p>
-<div class="section" id="migrating-from-0-0-3-to-1-0-0-or-0-1-0">
-<h3>Migrating from 0.0.3 to 1.0.0 (or 0.1.0)<a class="headerlink" href="#migrating-from-0-0-3-to-1-0-0-or-0-1-0" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="march-2020">
+<h2>1.0.0 (March 2020)<a class="headerlink" href="#march-2020" title="Permalink to this headline">¶</a></h2>
+<p>As of this release, all of the existing tests in the QARTOD API should be stable.</p>
+<p>Special thanks to Andrew Reed, Seth Foote, Elizabeth Dobbins, Jesse Lopez, and Charles Seaton for reviewing code,
+improving documentation, and submitting issues and pull requests.</p>
+<p>Changes from <strong>0.2.1</strong>:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="code docutils literal notranslate"><span class="pre">NcQcConfig</span></code> updates</dt><dd><ul>
+<li><p>Improve documentation and tests</p></li>
+<li><dl class="simple">
+<dt>Update <code class="code docutils literal notranslate"><span class="pre">save_to_netcdf</span></code> method to make it compliant with latest CF and IOOS metadata profiles</dt><dd><ul>
+<li><p>See <a class="reference external" href="https://github.com/cf-convention/cf-conventions/issues/216">cf-conventions #216</a> and <a class="reference external" href="https://github.com/ioos/ioos_qc/issues/14">ioos_qc #14</a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Add option for <code class="code docutils literal notranslate"><span class="pre">NcQcConfig</span></code> to generate aggregate flag (see <a class="reference external" href="https://github.com/ioos/ioos_qc/issues/15">#15</a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Attenuated signal test rewrite</dt><dd><ul>
+<li><p>See <a class="reference external" href="https://github.com/ioos/ioos_qc/pull/12">#12</a> and <a class="reference external" href="https://github.com/ioos/ioos_qc/pull/29">#29</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Climatology test updates</dt><dd><ul>
+<li><p>Use relative time for ranges (<a class="reference external" href="https://github.com/ioos/ioos_qc/issues/19">#19</a>)</p></li>
+<li><p><a class="reference external" href="https://github.com/ioos/ioos_qc/pull/28">span bugfixes</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ioos/ioos_qc/pull/22">periods bugfix</a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Fix <code class="code docutils literal notranslate"><span class="pre">datetime64[ns]</span></code> bugs (<a class="reference external" href="https://github.com/ioos/ioos_qc/issues/16">#16</a>)</p></li>
+<li><p>Added performance test suite</p></li>
+<li><p>Support for python 3.8</p></li>
+<li><p>Removed python 3.5 support</p></li>
+<li><p>Improved documentation and notebook examples</p></li>
+</ul>
+<p>If you were previously using <a class="reference external" href="https://github.com/ioos/qartod">https://github.com/ioos/qartod</a> , see the <em>Migrating</em> section below.</p>
+</div>
+<div class="section" id="sept-9-2019">
+<h2>0.2.1 (Sept 9, 2019)<a class="headerlink" href="#sept-9-2019" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Bugfix: flat line test handles short <code class="code docutils literal notranslate"><span class="pre">inp</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h2>0.2.0 (Sept 9, 2019)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Flat line test rewrite</dt><dd><ul>
+<li><p>Includes: a bug fix to handle a flat line starting at the beginning of the timeseries, massive speed improvements, and a slight change to the algorithm to find flat lines</p></li>
+<li><p>See (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/11">PR #11</a>) for more information</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Add Jupyter notebook examples to the docs</p></li>
+</ul>
+</div>
+<div class="section" id="feb-18-2019">
+<h2>0.1.1 (Feb 18, 2019)<a class="headerlink" href="#feb-18-2019" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Remove <code class="code docutils literal notranslate"><span class="pre">dask</span></code> as a requirement (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/5">#5</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="feb-8-2019">
+<h2>0.1.0 (Feb 8, 2019)<a class="headerlink" href="#feb-8-2019" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Complete test overhaul</dt><dd><ul>
+<li><p>Rewrite of tests to improve readability and maintainability</p></li>
+<li><p>Introduce <code class="code docutils literal notranslate"><span class="pre">QcConfig</span></code> concept</p></li>
+<li><p>Tests use time interval parameters instead of counts (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/2">#2</a>)</p></li>
+<li><p>Split out <code class="code docutils literal notranslate"><span class="pre">threshold</span></code> parameters into explicit <code class="code docutils literal notranslate"><span class="pre">suspect</span></code> and <code class="code docutils literal notranslate"><span class="pre">fail</span></code> parameters (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/4">#4</a>)</p></li>
+<li><p>Bug fixes</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Remove support for python 2</p></li>
+<li><p>Upgrade numpy to 1.14</p></li>
+<li><p>Build, test, and documentation improvements</p></li>
+</ul>
+<div class="section" id="migrating-from-0-0-3-to-0-1-0">
+<h3>Migrating from 0.0.3 to 0.1.0<a class="headerlink" href="#migrating-from-0-0-3-to-0-1-0" title="Permalink to this headline">¶</a></h3>
 <p>Both versions implement the same QARTOD tests using essentially the same algorithms, however the test implementations are much different.</p>
-<p>We recommend going test by test and comparing the documentation: <a class="reference external" href="https://ioos.github.io/qartod/code/qc.html">0.0.3</a> versus <a class="reference external" href="https://ioos.github.io/ioos_qc/api/ioos_qc.html#module-ioos_qc.qartod">1.0.0</a>.</p>
+<p>We recommend going test by test and comparing the documentation: <a class="reference external" href="https://ioos.github.io/qartod/code/qc.html">0.0.3</a> versus <a class="reference external" href="https://ioos.github.io/ioos_qc/api/ioos_qc.html#module-ioos_qc.qartod">latest</a>.</p>
 <p>Specific changes to be aware of include:</p>
 <ul class="simple">
 <li><p>Removing support for python 2 and requiring <code class="code docutils literal notranslate"><span class="pre">numpy&gt;=1.14</span></code>.</p></li>
@@ -87,51 +174,6 @@
 </ul>
 </div>
 </div>
-<div class="section" id="sept-9-2019">
-<h2>0.2.1 (Sept 9, 2019)<a class="headerlink" href="#sept-9-2019" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Bugfix: flat line test handles short <code class="code docutils literal notranslate"><span class="pre">inp</span></code></p></li>
-</ul>
-</div>
-<div class="section" id="id5">
-<h2>0.2.0 (Sept 9, 2019)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Flat line test rewrite</dt><dd><ul>
-<li><p>Includes: a bug fix to handle a flat line starting at the beginning of the timeseries, massive speed improvements, and a slight change to the algorithm to find flat lines</p></li>
-<li><p>See (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/11">PR #11</a>) for more information</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p>Add Jupyter notebook examples to the docs</p></li>
-</ul>
-</div>
-<div class="section" id="feb-18-2019">
-<h2>0.1.1 (Feb 18, 2019)<a class="headerlink" href="#feb-18-2019" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Remove <code class="code docutils literal notranslate"><span class="pre">dask</span></code> as a requirement (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/5">#5</a>)</p></li>
-</ul>
-</div>
-<div class="section" id="feb-8-2019">
-<h2>0.1.0 (Feb 8, 2019)<a class="headerlink" href="#feb-8-2019" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><dl class="simple">
-<dt>Complete test overhaul</dt><dd><ul>
-<li><p>Rewrite of tests to improve readability and maintainability</p></li>
-<li><p>Introduce <code class="code docutils literal notranslate"><span class="pre">QcConfig</span></code> concept</p></li>
-<li><p>Tests use time interval parameters instead of counts (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/2">#2</a>)</p></li>
-<li><p>Split out <code class="code docutils literal notranslate"><span class="pre">threshold</span></code> parameters into explicit <code class="code docutils literal notranslate"><span class="pre">suspect</span></code> and <code class="code docutils literal notranslate"><span class="pre">fail</span></code> parameters (<a class="reference external" href="https://github.com/ioos/ioos_qc/pull/4">#4</a>)</p></li>
-<li><p>Bug fixes</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p>Remove support for python 2</p></li>
-<li><p>Upgrade numpy to 1.14</p></li>
-<li><p>Build, test, and documentation improvements</p></li>
-</ul>
-</div>
 <div class="section" id="sept-8-2016">
 <h2>0.0.3 (Sept 8, 2016)<a class="headerlink" href="#sept-8-2016" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference external" href="https://github.com/ioos/qartod">https://github.com/ioos/qartod</a> and <a class="reference external" href="https://ioos.github.io/qartod/">https://ioos.github.io/qartod/</a></p>
@@ -170,14 +212,14 @@
 <li class="toctree-l1"><a class="reference internal" href="resources.html">IOOS QARTOD Resources</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Notebook Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">IOOS QC Releases and Migration Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#oct-9-2019">1.0.0 (Oct 9, 2019)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#migrating-from-0-0-3-to-1-0-0-or-0-1-0">Migrating from 0.0.3 to 1.0.0 (or 0.1.0)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#march-2020">1.0.0 (March 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sept-9-2019">0.2.1 (Sept 9, 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">0.2.0 (Sept 9, 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feb-18-2019">0.1.1 (Feb 18, 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feb-8-2019">0.1.0 (Feb 8, 2019)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#migrating-from-0-0-3-to-0-1-0">Migrating from 0.0.3 to 0.1.0</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sept-9-2019">0.2.1 (Sept 9, 2019)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">0.2.0 (Sept 9, 2019)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#feb-18-2019">0.1.1 (Feb 18, 2019)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#feb-8-2019">0.1.0 (Feb 8, 2019)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sept-8-2016">0.0.3 (Sept 8, 2016)</a></li>
 </ul>
 </li>
@@ -222,7 +264,7 @@
       &copy;2017, IOOS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

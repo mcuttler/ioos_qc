@@ -694,6 +694,7 @@
                            <span class="n">fail_threshold</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span>
                            <span class="n">test_period</span><span class="p">:</span> <span class="n">N</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                            <span class="n">min_obs</span><span class="p">:</span> <span class="n">N</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">min_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                            <span class="n">check_type</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;std&#39;</span><span class="p">,</span>
                            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
                            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -713,6 +714,10 @@
 <span class="sd">            Otherwise, will test against entire `inp`.</span>
 <span class="sd">        min_obs: Minimum number of observations in window required to calculate a result [optional].</span>
 <span class="sd">            Otherwise, test will start at beginning of time series.</span>
+<span class="sd">            Note: you can specify either `min_obs` or `min_period`, but not both.</span>
+<span class="sd">        min_period: Minimum number of seconds in test_period required to calculate a result [optional].</span>
+<span class="sd">            Otherwise, test will start at beginning of time series.</span>
+<span class="sd">            Note: you can specify either `min_obs` or `min_period`, but not both.</span>
 <span class="sd">        check_type: Either &#39;std&#39; (default) or &#39;range&#39;, depending on the type of check</span>
 <span class="sd">            you wish to perform.</span>
 
@@ -751,8 +756,15 @@
     <span class="n">flag_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">inp</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span> <span class="n">QartodFlags</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">test_period</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">min_obs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">min_periods</span> <span class="o">=</span> <span class="n">min_obs</span>
+        <span class="k">elif</span> <span class="n">min_period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tinp</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;timedelta64[s]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">min_periods</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_period</span> <span class="o">/</span> <span class="n">time_interval</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">min_periods</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">tinp</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-        <span class="n">windows</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{test_period}</span><span class="s1">s&#39;</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="n">min_obs</span><span class="p">)</span>
+        <span class="n">windows</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">test_period</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="n">min_periods</span><span class="p">)</span>
         <span class="n">check_val</span> <span class="o">=</span> <span class="n">window_func</span><span class="p">(</span><span class="n">windows</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># applying np.ptp to Series causes warnings, this is a workaround</span>
@@ -840,7 +852,7 @@
       &copy;2017, IOOS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

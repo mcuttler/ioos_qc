@@ -232,7 +232,7 @@ but can also be any attribute supported by a pandas Timestamp object.</p>
 
 <dl class="function">
 <dt id="ioos_qc.qartod.attenuated_signal_test">
-<code class="sig-prename descclassname">ioos_qc.qartod.</code><code class="sig-name descname">attenuated_signal_test</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">tinp</em>, <em class="sig-param">suspect_threshold</em>, <em class="sig-param">fail_threshold</em>, <em class="sig-param">test_period=None</em>, <em class="sig-param">min_obs=None</em>, <em class="sig-param">check_type='std'</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#attenuated_signal_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.attenuated_signal_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ioos_qc.qartod.</code><code class="sig-name descname">attenuated_signal_test</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">tinp</em>, <em class="sig-param">suspect_threshold</em>, <em class="sig-param">fail_threshold</em>, <em class="sig-param">test_period=None</em>, <em class="sig-param">min_obs=None</em>, <em class="sig-param">min_period=None</em>, <em class="sig-param">check_type='std'</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ioos_qc/qartod.html#attenuated_signal_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ioos_qc.qartod.attenuated_signal_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for near-flat-line conditions using a range or standard deviation.</p>
 <p>Missing and masked data is flagged as UNKNOWN.</p>
 <dl class="field-list simple">
@@ -247,7 +247,11 @@ In observations units.</p></li>
 <li><p><strong>test_period</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Length of time to test over in seconds [optional].
 Otherwise, will test against entire <cite>inp</cite>.</p></li>
 <li><p><strong>min_obs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>]) – Minimum number of observations in window required to calculate a result [optional].
-Otherwise, test will start at beginning of time series.</p></li>
+Otherwise, test will start at beginning of time series.
+Note: you can specify either <cite>min_obs</cite> or <cite>min_period</cite>, but not both.</p></li>
+<li><p><strong>min_period</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Minimum number of seconds in test_period required to calculate a result [optional].
+Otherwise, test will start at beginning of time series.
+Note: you can specify either <cite>min_obs</cite> or <cite>min_period</cite>, but not both.</p></li>
 <li><p><strong>check_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Either ‘std’ (default) or ‘range’, depending on the type of check
 you wish to perform.</p></li>
 </ul>
@@ -614,7 +618,7 @@ value. [optional]</p></li>
       &copy;2017, IOOS.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
