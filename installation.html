@@ -76,6 +76,33 @@
 <p><em>Note:</em> If you add or edit the notebook examples, you should save the result with the <em>output cleared on all cells</em>.
 This way, <code class="docutils literal notranslate"><span class="pre">nbsphinx</span></code> will build the notebook output during the build stage.</p>
 </div>
+<div class="section" id="releasing">
+<h2>Releasing<a class="headerlink" href="#releasing" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Update the version numbers in the repo</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Look at a previous commit, e.g., <a class="reference external" href="https://github.com/ioos/ioos_qc/commit/e54b5e7659e632da1bbc00b7a91056f71e22512e">bump to 1.0.0</a>, to make sure you get all the right places.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Tag <cite>master</cite> with the version number</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>You can use the Github UI at <a class="reference external" href="https://github.com/ioos/ioos_qc/releases">https://github.com/ioos/ioos_qc/releases</a> to do this easily</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Update the conda-forge feedstock</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fork <a class="reference external" href="https://github.com/conda-forge/ioos_qc-feedstock">https://github.com/conda-forge/ioos_qc-feedstock</a> and follow the instructions</p></li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
@@ -108,6 +135,7 @@ This way, <code class="docutils literal notranslate"><span class="pre">nbsphinx<
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#development-and-testing">Development and Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#releasing">Releasing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
