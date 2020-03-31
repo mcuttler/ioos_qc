@@ -8,6 +8,7 @@
 ./_modules/ioos_qc/utils.html
 ./_sources/api/ioos_qc.rst.txt
 ./_sources/api/modules.rst.txt
+./_sources/development.rst.txt
 ./_sources/examples.rst.txt
 ./_sources/examples/QartodTestExample_SalinityAttenuation.ipynb.txt
 ./_sources/examples/QartodTestExample_WaterLevel.ipynb.txt
@@ -36,6 +37,7 @@
 ./_static/underscore.js
 ./api/ioos_qc.html
 ./api/modules.html
+./development.html
 ./examples.html
 ./examples/QartodTestExample_SalinityAttenuation.html
 ./examples/QartodTestExample_SalinityAttenuation.ipynb

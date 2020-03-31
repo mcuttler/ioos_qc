@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Development and Testing &#8212; ioos_qc 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Other QARTOD Implementations" href="other.html" />
+    <link rel="prev" title="IOOS QC Releases and Migration Guide" href="releases.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="development-and-testing">
+<h1>Development and Testing<a class="headerlink" href="#development-and-testing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="environment-setup">
+<h2>Environment setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline">¶</a></h2>
+<p>Create a conda environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">ioosqc37</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.7</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">ioosqc37</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="o">--</span><span class="n">file</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> <span class="o">--</span><span class="n">file</span> <span class="n">tests</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>Run tests:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline">¶</a></h2>
+<p>Build docs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">y</span> <span class="o">-</span><span class="n">n</span> <span class="n">ioosqc37_docs</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.7</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">ioosqc37_docs</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">file</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> \
+    <span class="o">--</span><span class="n">file</span> <span class="n">tests</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> \
+    <span class="o">--</span><span class="n">file</span> <span class="n">docs</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span> \
+    <span class="o">--</span><span class="n">file</span> <span class="n">docs</span><span class="o">/</span><span class="n">source</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">cd</span> <span class="n">docs</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p>Then open a browser to <code class="docutils literal notranslate"><span class="pre">build/html/index.html</span></code>.</p>
+<p><em>Note:</em> If you encounter problems during the build, delete the <code class="docutils literal notranslate"><span class="pre">docs/source/examples/.ipynb_checkpoints/</span></code> folder and try again.</p>
+<p>Run Jupyter server and edit notebook examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">ioosqc37_docs</span>
+<span class="n">cd</span> <span class="n">docs</span><span class="o">/</span><span class="n">source</span><span class="o">/</span><span class="n">examples</span>
+<span class="n">jupyter</span> <span class="n">notebook</span>
+</pre></div>
+</div>
+<p><em>Note:</em> If you add or edit the notebook examples, you should save the result with the <em>output cleared on all cells</em>.
+This way, <code class="docutils literal notranslate"><span class="pre">nbsphinx</span></code> will build the notebook output during the build stage.</p>
+</div>
+<div class="section" id="releasing">
+<h2>Releasing<a class="headerlink" href="#releasing" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Update the version numbers in the repo</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Look at a previous commit, e.g., <a class="reference external" href="https://github.com/ioos/ioos_qc/commit/e54b5e7659e632da1bbc00b7a91056f71e22512e">bump to 1.0.0</a>, to make sure you get all the right places.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Tag <cite>master</cite> with the version number</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>You can use the Github UI at <a class="reference external" href="https://github.com/ioos/ioos_qc/releases">https://github.com/ioos/ioos_qc/releases</a> to do this easily</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Update the conda-forge feedstock</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fork <a class="reference external" href="https://github.com/conda-forge/ioos_qc-feedstock">https://github.com/conda-forge/ioos_qc-feedstock</a> and follow the instructions</p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ioos_qc</a></h1>
+
+
+
+<p class="blurb">IOOS QARTOD and other Quality Control tests implemented in Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=ioos&repo=ioos_qc&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">IOOS QARTOD Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Notebook Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">IOOS QC Releases and Migration Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development and Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#environment-setup">Environment setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docs">Docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#releasing">Releasing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Other QARTOD Implementations</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">ioos_qc</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="releases.html" title="previous chapter">IOOS QC Releases and Migration Guide</a></li>
+      <li>Next: <a href="other.html" title="next chapter">Other QARTOD Implementations</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, IOOS.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
