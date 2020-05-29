@@ -1,6 +1,7 @@
 geojson
+geopandas
 netCDF4
-numpy>=1.14
+numpy
 pygc
 ruamel.yaml
 shapely
